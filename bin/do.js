@@ -18,7 +18,7 @@ module.exports = {
 module.exports.ChRIStemplate.prototype  = {
     constructor:    module.exports.ChRIStemplate,
 
-    create:         function() {
+    convert:        function() {
         try {
             for(let [key, value] of Object.entries(this.json_source)) {
                 this.l_collection.push({"name": key, "value": value})
@@ -31,6 +31,11 @@ module.exports.ChRIStemplate.prototype  = {
             this.b_convert  = false;
             this.error      = err;
         }
+        return this.b_convert;
+    },
+
+    OK:             function() {
+        return(this.b_convert);
     }
 
 }
