@@ -147,14 +147,8 @@ ARGS
     
 `;
 
-const   chalk       = require("chalk");
-const   boxen       = require("boxen");
 const   yargs       = require("yargs");
-const   colorize    = require("json-colorizer");
-
-const   input       = require("./input.js");
-const   output      = require("./output.js");
-const   action      = require("./do.js");
+const   program     = require("./app.js");
 
 const   CLIoptions  = yargs
     .usage("Usage: [--verbose] [--stdin] | [-i <inputFile>] [--stdout] | [-o <outputFile>] [--stringify <JSONkey>]")
@@ -212,59 +206,24 @@ const   CLIoptions  = yargs
         })
     .argv;
 
+let APP             = new program.app(CLIoptions);
+let b_runOK         = APP.run();
 
-let IN              = new input.InputObj(CLIoptions);
-let DO              = null;
-let OUT             = null;
-
-IN.source();
-IN.parse();
-if(IN.b_json) {
-    DO          = new action.ChRIStemplate(IN.ojson)
-    DO.create();
-    if(DO.b_convert) {
-        OUT     = new output.OutputObj(CLIoptions, DO);
-        OUT.sink();
-    }
-}
-
-if(CLIoptions.verbose || CLIoptions.man) {
+if(CLIoptions.verbose || CLIoptions.man || !b_runOK) {
     // This is probably overkill, but fun to play with some 
     // nodejs output generating options.
 
-    // Let's make a nice little box
-    const boxenOptions  = {
-        padding:            1,
-        margin:             0,
-        borderStyle:        "round",
-        borderColor:        "green",
-        backgroundColor:    "#222222"
-    };
-
-    // with some misc info
-    let   str_info      = "";  
+    APP.outputBox_setup();
+    let str_info        = "";
     if(CLIoptions.man)
         str_info        = str_aboutMe;
-    else {
-        const str_INcolor   = colorize(IN.str_data);
-        const str_OUTcolor  = colorize(OUT.str_data);
-        str_info        = `
-Conversion summary
-
-InputFile:      ${CLIoptions.inputFile} 
-InputSteam:     ${CLIoptions.stdin}
-OutputFile:     ${CLIoptions.outputFile}
-OutputStream:   ${CLIoptions.stdout}
-
-InputJSON:
-${str_INcolor}
-
-`;
+    else if(!b_runOK && CLIoptions.verbose) {
+        str_info        = APP.info_error();
+    } else if(b_runOK && CLIoptions.verbose) {
+        str_info        = APP.info_normal();
     }
-    
-    const str_boxText   = chalk.white.bold(str_info);
-    const msgBox        = boxen(str_boxText, boxenOptions);
 
-    console.log("\n");
-    console.log(msgBox);
+    if(CLIoptions.verbose)
+        APP.outputBox_print(str_info);
+
 } 
