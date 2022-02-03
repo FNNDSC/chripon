@@ -38,8 +38,9 @@ module.exports.InputObj.prototype  = {
             this.b_input    = true;
         } catch (err) {
             this.b_input    = false;
-            this.err        = err;
+            this.error      = err;
         }
+        return this.b_input;
     },
 
     parse:          function() {
@@ -51,13 +52,18 @@ module.exports.InputObj.prototype  = {
                 this.error      = err;
                 this.b_json     = false; 
             }
+            if(this.b_json && `${this.options.stringify}`) {
+                if(this.ojson.hasOwnProperty(this.options.stringify)) {
+                    let key         = this.options.stringify;
+                    let str_val     = JSON.stringify(this.ojson[key]);
+                    this.ojson[key] = str_val;
+                }
+            }            
         }
-        if(this.b_json && `${this.options.stringify}`) {
-            if(this.ojson.hasOwnProperty(this.options.stringify)) {
-                let key         = this.options.stringify;
-                let str_val     = JSON.stringify(this.ojson[key]);
-                this.ojson[key] = str_val;
-            }
-        }
+        return this.b_json;
+    },
+
+    OK:             function() {
+        return (this.b_input && this.b_json);
     }
 }
