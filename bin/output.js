@@ -39,5 +39,9 @@ module.exports.OutputObj.prototype  = {
             this.error      = err;
             this.b_output   = false
         }
+    },
+
+    OK:     function() {
+        return(this.b_output);
     }
 }
