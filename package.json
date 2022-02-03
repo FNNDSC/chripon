@@ -1,6 +1,6 @@
 {
   "name": "chripon",
-  "version": "1.0.0",
+  "version": "1.2.0",
   "description": "Convert a human-friendly JSON description of a ChRIS pipeline to a collection+json template suitable for POSTing to a ChRIS instance.",
   "main": "bin/index.js",
   "scripts": {
